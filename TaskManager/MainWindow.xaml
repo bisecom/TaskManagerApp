@@ -1,0 +1,203 @@
+﻿<Window x:Class="TaskManager.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TaskManager"
+        mc:Ignorable="d"
+        Title="Диспетчер Задач Windows" Height="650" Width="600" Icon="Resources/Task_Manager.ico">
+    <Window.Resources>
+        <Style x:Key="MenuItemStyle1" TargetType="{x:Type MenuItem}">
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+        </Style>
+
+        <Style x:Key="HeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#B6B6B6"/>
+            <!--<Setter Property="Foreground" Value="#FF000000" />-->
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="IsTabStop" Value="False" />
+            <Setter Property="SeparatorBrush" Value="#FFC9CACA" />
+            <Setter Property="Padding" Value="4" />
+        </Style>
+
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.05*"/>
+            <RowDefinition/>
+            <!--<RowDefinition Height="0.1*"/>-->
+            <RowDefinition Height="0.05*"/>
+        </Grid.RowDefinitions>
+
+        <Menu Height="25" VerticalAlignment="Top">
+            <MenuItem Header="Файл">
+                <MenuItem Header="Новая задача (Выполнить...)" Click="OpenTask_Click"></MenuItem>
+                <Separator />
+                <MenuItem Header="Завершение диспетчера задач" Click="CloseApp_Click">
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="Параметры">
+                <MenuItem Header="Поверх остальных окон" IsCheckable="True"></MenuItem>
+                <MenuItem Header="Сворачивать после обращения" IsCheckable="True"></MenuItem>
+                <MenuItem Header="Скрывать свернутое" IsCheckable="True"></MenuItem>
+                <MenuItem Header="Отображать 16-разрядные задачи" IsCheckable="True"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Вид">
+                <MenuItem Header="Обновить" ></MenuItem>
+                <MenuItem Header="Скорость обновления" >
+                    <MenuItem Header="Высокая">
+                        <MenuItem.Icon>
+                            <RadioButton/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Обычная">
+                        <MenuItem.Icon>
+                            <RadioButton/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Низкая">
+                        <MenuItem.Icon>
+                            <RadioButton/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Приостановить">
+                        <MenuItem.Icon>
+                            <RadioButton/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="Выбрать столбцы..." ></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Справка">
+                <MenuItem Header="Разделы справки диспетчера задач" ></MenuItem>
+                <MenuItem Header="О программе" ></MenuItem>
+            </MenuItem>
+        </Menu>
+
+        <TabControl x:Name="taskManTabCntrl" Grid.Row="1" Margin="6,6,6,6" SelectionChanged="TabControl_SelectionChanged">
+            <TabItem x:Name="AppsTabCtrlPage" Header="Приложения">
+                <Grid x:Name="AppsGrid">
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition Height="45"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition Width="110"></ColumnDefinition>
+                        <ColumnDefinition Width="110"></ColumnDefinition>
+                        <ColumnDefinition Width="110"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="CancelTaskBtn" Grid.Row="1" Grid.Column="1" Height="23" Margin="5,0,5,6" Content="Снять задачу" Click="CancelTaskBtn_Click"/>
+                    <Button x:Name="ShiftTaskBtn" Grid.Row="1" Grid.Column="2" Height="23" Margin="5,0,5,6" Content="Переключиться"/>
+                    <Button x:Name="NewTaskBtn" Grid.Row="1" Grid.Column="3" Height="23" Margin="5,0,5,6" Content="Новая задача..." Click="NewTaskBtn_Click"/>
+                    <DataGrid x:Name="AppsDgd" Grid.Column="0" Grid.ColumnSpan="4" Margin="7,7,7,0" ItemsSource="{Binding myAppsList}" 
+                              IsReadOnly="True" AutoGenerateColumns="False" ColumnHeaderStyle="{StaticResource HeaderStyle}" SelectionChanged="AppsDgd_CurrentCellChanged">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding AppsDescription}" MinWidth="100" Width="*"
+                                Header="Задача" />
+                            <DataGridTextColumn Binding="{Binding AppsWorkingCondition}" MinWidth="100" Width="0.7*"
+                                Header="Состояние" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="ProcessTabCtrlPage" Header="Процессы">
+                <Grid x:Name="ProcessesGrid">
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition Height="0.1*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition Width="150"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="CancelTaskProcessBtn" Grid.Row="1" Grid.Column="1" Height="23" Margin="20,6,7,6" Content="Завершить процесс" Click="CancelProccBtn_Click"/>
+                    <CheckBox x:Name="CancelTaskProcessCbx" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Content="Отображать процессы всех пользователей"/>
+                    <DataGrid x:Name="ProcessesDgd" Grid.ColumnSpan="2" Margin="7,7,7,0" IsReadOnly="True" AutoGenerateColumns="False" ItemsSource="{Binding myprossList}"
+                              SelectionChanged="ProcessesDgd_CurrentCellChanged">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding ProcessIcon_}" MinWidth="20" Width="20"
+                                Header=" " />
+                            <DataGridTextColumn Binding="{Binding ProcessName_}" MinWidth="100" Width="*"
+                                Header="Имя образа" />
+                            <DataGridTextColumn Binding="{Binding ProcessUsername_}" MinWidth="100" Width="*"
+                                Header="Пользователь" />
+                            <DataGridTextColumn Binding="{Binding ProcessLoad_}" MinWidth="30" Width="40"
+                                Header="ЦП" />
+                            <DataGridTextColumn Binding="{Binding ProcessMemory_}" MinWidth="100" Width="*"
+                                Header="Память (частный рабочий набор)" />
+                            <DataGridTextColumn Binding="{Binding ProcessDescription_}" MinWidth="100" Width="*"
+                                Header="Описание" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="ServicesTabCtrlPage" Header="Службы">
+                <Grid x:Name="ServicesGrid">
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition Height="0.1*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition Width="150"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="ServiceTabBtn" Grid.Row="1" Grid.Column="1" Height="23" Margin="30,6,7,6" Content="Службы..."/>
+                    <DataGrid x:Name="ServicesDgd" Grid.ColumnSpan="2" Margin="7,7,7,0" IsReadOnly="True" AutoGenerateColumns="False" ItemsSource="{Binding myServicesList}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding ServicesName}" MinWidth="100" Width="*"
+                                Header="Имя" />
+                            <DataGridTextColumn Binding="{Binding ProcessId}" MinWidth="60" Width="90"
+                                Header="ИД процесса" />
+                            <DataGridTextColumn Binding="{Binding ServiceDescription}" MinWidth="100" Width="*"
+                                Header="Описание" />
+                            <DataGridTextColumn Binding="{Binding ServiceState}" MinWidth="60" Width="70"
+                                Header="Состояние" />
+                            <DataGridTextColumn Binding="{Binding ServiceGroup}" MinWidth="100" Width="*"
+                                Header="Группа" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <StatusBar Grid.Row="3" BorderThickness="0 1 0 0" BorderBrush="LightGray">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="70"></ColumnDefinition>
+                            <ColumnDefinition Width="35"></ColumnDefinition>
+                            <ColumnDefinition Width="80"></ColumnDefinition>
+                            <ColumnDefinition Width="35"></ColumnDefinition>
+                            <ColumnDefinition Width="115"></ColumnDefinition>
+                            <ColumnDefinition Width="35"></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+
+            <StatusBarItem Grid.Column="0">
+                <TextBlock x:Name="processQtyTblk" >Процессов: </TextBlock>
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="1">
+                <TextBlock x:Name="processQtyTblkData"></TextBlock>
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="2">
+                <TextBlock x:Name="processLoadTblk">Загрузка ЦП: </TextBlock>
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="3">
+                <TextBlock x:Name="processLoadTblkData"></TextBlock>
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="4">
+                <TextBlock x:Name="procesMemoryTblk">Физическая память: </TextBlock>
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="5">
+                <TextBlock x:Name="procesMemoryTblkData"></TextBlock>
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window>

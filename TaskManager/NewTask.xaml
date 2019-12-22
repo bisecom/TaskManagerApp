@@ -1,0 +1,47 @@
+﻿<Window x:Class="TaskManager.NewTask"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TaskManager"
+        mc:Ignorable="d"
+        Title="Создать новую задачу" Height="235" Width="465" ResizeMode="NoResize" Icon="Resources/Task_Manager.ico" >
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition ></RowDefinition>
+            <RowDefinition Height="60"></RowDefinition>
+            <RowDefinition Height="65"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition ></ColumnDefinition>
+            <ColumnDefinition Width="117"></ColumnDefinition>
+            <ColumnDefinition Width="117"></ColumnDefinition>
+            <ColumnDefinition Width="117"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <Grid.Resources>
+            <Style x:Key="btnStyleOk" TargetType="Button">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Path=SelectedItem, 
+                                               ElementName=getTaskCbx}" 
+                                               Value="{x:Null}">
+                        <Setter Property="IsEnabled" Value="False" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Resources>
+
+        <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" TextWrapping="Wrap" Margin="-25,15,20,0" Text="Введите имя программы, папки, документа или ресурса Интернета, и Windows откроет их."/>
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Открыть:" Margin="20,4,0,0"/>
+        <Image Grid.Row="0" Grid.Column="0" Stretch="Uniform" Width="36" Margin="-20,15,10,25" Source="pack://application:,,,/Resources/ManagerTask-Icon.png" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+        <ComboBox x:Name="getTaskCbx" IsEditable="True" Height="25" VerticalAlignment="Top" ItemsSource="{Binding Items}"
+                  Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Margin="-25,0,20,0" SelectedItem="{Binding SelectedItem}" Text="{Binding NewItem, UpdateSourceTrigger=LostFocus}"   >
+            
+        </ComboBox>
+        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4"  Background="#f2f2f2" />
+        <Button x:Name="OkBtn" Style="{StaticResource btnStyleOk}" Grid.Row="2" Grid.Column="1" Height="26" Margin="10,0,5,6" Content="ОК" Click="OkBtn_Click" />
+        <Button x:Name="CancelBtn" Grid.Row="2" Grid.Column="2" Height="26" Margin="10,0,8,6" Content="Отмена" Click="CancelBtn_Click"/>
+        <Button x:Name="BrowseBtn" Grid.Row="2" Grid.Column="3" Height="26" Margin="5,0,20,6" Content="Обзор..." Click="BrowseBtn_Click"/>
+
+    </Grid>
+</Window>
